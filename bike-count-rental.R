@@ -78,32 +78,39 @@ for(i in cnames){
 ### visualization and trend of distribution
 #see distribution with season
 ggplot(df,aes(season,total_count))+
-  ggeom_point(s(color=weather_condition))
+  geom_boxplot(aes(color=weather_condition))
 #we can see, there is low count in season 1
+#season 2 & 3 has high average of demand
 #one another  thing we can observe that is low count in bad weather
 
-#effect of temp on daily basis
-ggplot(df,aes(temp,total_count))+
+#effect of temperature, humidity and windspeed on daily basis
+ggplot(df,aes(temperature,total_count))+
   geom_point(aes(color=humidity,size=windspeed))
 
-#we can clearlyobserve that count is proportional to the temp
-#but whenever is high wind speed ,count is less(big size dot)
-#dark dots show low humidity that shows lower
+#we can clearly observe that demand is high in hot days
+#and humidity and windspeed has adverse effect on demand of bike
+#dark dots show low humidity that show high count
+#small dots shows low windspeed with high demand
+#so, on the basis of all facts, we can conclude that in hot days there is high demand of bikes
+#but whenever is bad weather like rain(high humidity) and high windspeed then it is risky to ride a bike so in these conditions demand are low
 
+
+#till now we saw effect of weather now we see effect of working condition of people
 ##effect of holiday in  a month
 ggplot(df,aes(month,total_count))+
   geom_boxplot(aes(color=holiday))
+#there is also effect of weather is shown clearly as in summer month the demand is high
 #we can compare median of holiday and working day, there is slightly difference only.
 ##################################Feature Selection################################################
 ## Correlation Plot 
 corrgram(df[,numeric_index], order = F,
          upper.panel=panel.pie, text.panel=panel.txt, main = "Correlation Plot")
-#removing atemp as it is highly correlated with temp
+#removing felling_temperature as it is highly correlated with temperature
 #removing casual and registered because this is what we want to predict
-#removing holiday,workingday and weekdays as they do not have contribution
+#removing holiday,workingday and weekdays as they do not have much contribution
 
 ## Dimension Reduction
-df = subset(df, select = -c(date,atemp,weekday,holiday,workingday,casual,registered))
+df = subset(df, select = -c(feeling_temperature,weekday,holiday,workingday,casual,registered))
 #Divide the data into train and test
 set.seed(123)
 train_index = sample(1:nrow(df), 0.7 * nrow(df))
@@ -165,3 +172,4 @@ MAPE(test[,9],prediction_svr)
 #accuracy = 80.72%
 
 ##freeze the linear regression model as it is has minimal error
+
